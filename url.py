@@ -87,5 +87,5 @@ def url_get( url,          # GET URL
     """
 
     print(url)
-    curl = PycURLRunner(url, params, timeout, allow_redirects, headers, verify_keys)
+    curl = PycURLRunner(url, params, None, timeout, allow_redirects, headers, verify_keys)
     return curl(json, throw)

@@ -36,4 +36,4 @@ if test_type == '-':
 
 assist = util.api_local_host()
 
-util.api_has_MyScheduler(assist)
+print(util.api_has_MyScheduler(assist))

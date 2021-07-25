@@ -48,13 +48,13 @@ def api_url(host = None,
         path = path[1:]
 
     if protocol is None:
-        protocol = 'https'
+        protocol = 'http'
 
     return protocol + '://' \
         + host \
         + ('' if port is None else (':' + str(port))) \
-        + api_root() + '/'\
-        + ('' if path is None else str(path))
+        + api_root() \
+        + ('' if path is None else '/' + str(path))
 
 def api_url_hostport(hostport=None,
             path=None,
