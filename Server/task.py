@@ -2,12 +2,13 @@ import os
 import sys
 sys.path.append(os.path.join(os.getcwd(), '..'))
 sys.path.append(os.getcwd())
+import myjson
+import url
 import argparse
 import util
 
 parser = argparse.ArgumentParser(description='run task with myScheduler')
 parser.add_argument('--test', action='store_true', help='to check if the argparse is working')
-#parser.add_argument('remaining_options', type=str, nargs='+', help='your specific task and its options')
 args, remain = parser.parse_known_args()
 
 if args.test:
@@ -36,4 +37,18 @@ if test_type == '-':
 
 assist = util.api_local_host()
 
-print(util.api_has_MyScheduler(assist))
+if not util.api_has_MyScheduler(assist):
+    raise ValueError('Assist Server Error.')
+
+spec_url = util.api_url_hostport(assist, path = 'tests/' + test_type + '/spec')
+status, raw_spec = url.url_get(
+    spec_url,
+    params={'args': myjson.json_dump(remain)},
+)
+
+if status == 200:
+    print('succeed')
+    print(raw_spec)
+else:
+    print(status)
+    print(raw_spec)

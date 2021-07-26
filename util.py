@@ -65,7 +65,6 @@ def api_url_hostport(hostport=None,
     (host, port) = api_host_port(hostport)
     return api_url(host=host, port=port, path=path, protocol=protocol)
 
-
 def api_has_MyScheduler(hostport, timeout=5):
     if hostport is None:
         hostport = api_host_port()
@@ -90,4 +89,4 @@ def api_has_MyScheduler(hostport, timeout=5):
     )
 
     return status == 200
-    
+ 
