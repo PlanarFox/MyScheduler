@@ -36,10 +36,12 @@ if test_type == '-':
     raise ValueError('No test type specified.')
 
 assist = util.api_local_host()
+# myScheduler server address. Only localhost is supported right now 
 
 if not util.api_has_MyScheduler(assist):
     raise ValueError('Assist Server Error.')
 
+# command line arguments validationand specing
 spec_url = util.api_url_hostport(assist, path = 'tests/' + test_type + '/spec')
 status, raw_spec = url.url_get(
     spec_url,
@@ -52,3 +54,29 @@ if status == 200:
 else:
     print(status)
     print(raw_spec)
+
+
+task['test']['spec'] = raw_spec
+
+if task['test']['spec'].get('participants', None) is None:
+    task['test']['spec']['participants'] = [util.api_local_host()]
+    # single participant only right now
+    # participant list should be maintained by assist server eventually
+
+
+for participant in task['test']['spec']['participants']:
+    if not util.api_has_MyScheduler(participant):
+        raise ValueError('Participant hasn\'t install MyScheduler yet.')
+
+
+#Give the task to the participant(s). No multi-participants considiered.
+for participant in task['test']['spec']['participants']:
+    task_url = util.api_url(participant, '/tasks')
+    print('get task url:', task_url)
+    status, task_url = url.url_post(task_url, data=task)
+
+if status != 200:
+    raise ValueError('Task post failed:\n' + task_url)
+else:
+    print('task url:', task_url)
+

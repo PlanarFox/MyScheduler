@@ -12,7 +12,8 @@ app = Flask(__name__)
 #def hello():
 #    return 'Hello The World\n'
 
-from test import *
+from Client.test import *
+from Client.task import *
 
 if __name__ == '__main__':
     app.run(debug=True, port=80)

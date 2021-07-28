@@ -2,3 +2,4 @@
 .directory
 *.pyc
 __pycache__/
+*.tar

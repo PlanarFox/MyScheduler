@@ -1,7 +1,7 @@
 import pycurl
 import io
 import urllib
-from myjson import json_load
+from myjson import json_load, json_dump
 
 class URLException(Exception):
     pass
@@ -86,6 +86,54 @@ def url_get( url,          # GET URL
     Fetch a URL using GET with parameters, returning whatever came back.
     """
 
-    print(url)
     curl = PycURLRunner(url, params, None, timeout, allow_redirects, headers, verify_keys)
+    return curl(json, throw)
+
+
+def __content_type_data(content_type, headers, data):
+
+    """Figure out the Content-Type based on an incoming type and data and
+    return that plus data in a type that PycURL can handle."""
+
+    assert(content_type is None or isinstance(content_type, str))
+    assert(isinstance(headers, dict))
+
+    if content_type is None or "Content-Type" not in headers:
+
+        # Dictionaries are JSON
+        if isinstance(data, dict):
+            content_type = "application/json"
+            data = json_dump(data)
+
+        # Anything else is plain text.
+        else:
+            content_type = "text/plain"
+            data = str(data)
+
+    return content_type, data
+
+
+def url_post( url,          # GET URL
+              params={},    # GET parameters
+              data=None,    # Data to post
+              content_type=None,  # Content type
+              bind=None,    # Bind request to specified address
+              json=True,    # Interpret result as JSON
+              throw=True,   # Throw if status isn't 200
+              timeout=None, # Seconds before giving up
+              allow_redirects=True, #Allows URL to be redirected
+              headers={},   # Hash of HTTP headers
+              verify_keys=False  # Verify SSL keys
+              ):
+    """
+    Post to a URL, returning whatever came back.
+    """
+
+    content_type, data = __content_type_data(content_type, headers, data)
+    headers["Content-Type"] = content_type
+
+    curl = PycURLRunner(url, params, bind, timeout, allow_redirects, headers, verify_keys)
+
+    curl.curl.setopt(pycurl.POSTFIELDS, data)
+
     return curl(json, throw)

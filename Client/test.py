@@ -1,7 +1,7 @@
 from Client import app
-import util_C # comment when coding
-#from . import util_C # comment when running
+import Client.util_C as util_C
 from flask import Response
+import Client.cli_to_spec
 
 @app.route('/myscheduler')
 def hello():
@@ -17,7 +17,7 @@ def spec_to_cli(name):
          return 
     args = [ str(arg) for arg in args ]
     if name == 'rtt':
-        succeed, spec = util_C.rtt_cli_to_spec(args)
+        succeed, spec = getattr(Client.cli_to_spec, 'rtt')(args)
     else:
         succeed = False
         spec = 'Test type unsupported.'
