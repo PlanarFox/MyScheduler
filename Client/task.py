@@ -38,7 +38,24 @@ def create_task():
 
     return util_C.ok_json(task_url)
     
-    
+
+@app.route('/myscheduler/tasks/<uuid>', methods=['GET'])
+def return_result(uuid):
+    conn = db.connect_db()
+    if not conn:
+        return util_C.bad_request('Database connection failed')
+    cursor = conn.cursor()
+    try:
+        cursor.execute('SELECT result, isdone FROM task WHERE task.id = %s', (uuid,))
+    except Exception as e:
+        return util_C.bad_request('Database insert error: %s' % (str(e),))
+    result, isdone = cursor.fetchall()[0]
+    db.close_db(conn)
+
+    if isdone:
+        return util_C.ok(result, mimetype='text/plain') 
+    else:
+        return util_C.bad_request('task not done yet.')
     
 
     

@@ -6,6 +6,7 @@ import myjson
 import url
 import argparse
 import util
+import time
 
 parser = argparse.ArgumentParser(description='run task with myScheduler')
 parser.add_argument('--test', action='store_true', help='to check if the argparse is working')
@@ -80,3 +81,14 @@ if status != 200:
 else:
     print('task url:', task_url)
 
+
+print('fetching the running result')
+while True:
+    time.sleep(1.0)
+    status, result = url.url_get(task_url, json=False)
+    if status == 400:
+        print('fetching result failed,: ', result)
+        print('retrying...')
+    else:
+        print(result)
+        break

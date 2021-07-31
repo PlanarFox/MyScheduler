@@ -1,6 +1,5 @@
 from Client import app
 import Client.util_C as util_C
-from flask import Response
 import Client.cli_to_spec
 
 @app.route('/myscheduler')
@@ -16,8 +15,8 @@ def spec_to_cli(name):
                or isinstance(arg, float) ):
          return 
     args = [ str(arg) for arg in args ]
-    if name == 'rtt':
-        succeed, spec = getattr(Client.cli_to_spec, 'rtt')(args)
+    if name in ['rtt']:
+        succeed, spec = getattr(Client.cli_to_spec, name)(args)
     else:
         succeed = False
         spec = 'Test type unsupported.'
