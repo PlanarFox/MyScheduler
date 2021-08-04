@@ -10,6 +10,8 @@ import time
 
 parser = argparse.ArgumentParser(description='run task with myScheduler')
 parser.add_argument('--test', action='store_true', help='to check if the argparse is working')
+parser.add_argument('--host', type=str, help='assist server address')
+parser.add_argument('--port', type=str, default='80', help='assist server port')
 args, remain = parser.parse_known_args()
 
 if args.test:
@@ -36,7 +38,10 @@ test_type = task['test'].get('type', '-')
 if test_type == '-':
     raise ValueError('No test type specified.')
 
-assist = util.api_local_host()
+if args.host is None:
+    assist = util.api_local_host()
+else:
+    assist = args.host + ':' + args.port
 # myScheduler server address. Only localhost is supported right now 
 
 if not util.api_has_MyScheduler(assist):
