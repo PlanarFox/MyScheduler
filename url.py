@@ -1,3 +1,6 @@
+'''
+DEPRECIATED!!!
+'''
 import pycurl
 import io
 import urllib

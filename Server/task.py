@@ -1,12 +1,13 @@
 import os
 import sys
+
 sys.path.append(os.path.join(os.getcwd(), '..'))
 sys.path.append(os.getcwd())
-import myjson
-import url
+import requests
 import argparse
 import util
 import time
+import myjson
 
 parser = argparse.ArgumentParser(description='run task with myScheduler')
 parser.add_argument('--test', action='store_true', help='to check if the argparse is working')
@@ -49,10 +50,10 @@ if not util.api_has_MyScheduler(assist):
 
 # command line arguments validationand specing
 spec_url = util.api_url_hostport(assist, path = 'tests/' + test_type + '/spec')
-status, raw_spec = url.url_get(
-    spec_url,
-    params={'args': myjson.json_dump(remain)},
-)
+
+r = requests.get(url = spec_url, params={'args': myjson.json_dump(remain)})
+status = r.status_code
+raw_spec = r.json()
 
 if status == 200:
     print('succeed')
@@ -65,7 +66,7 @@ else:
 task['test']['spec'] = raw_spec
 
 if task['test']['spec'].get('participants', None) is None:
-    task['test']['spec']['participants'] = [util.api_local_host()]
+    task['test']['spec']['participants'] = [assist]
     # single participant only right now
     # participant list should be maintained by assist server eventually
 
@@ -79,7 +80,9 @@ for participant in task['test']['spec']['participants']:
 for participant in task['test']['spec']['participants']:
     task_url = util.api_url(participant, '/tasks')
     print('get task url:', task_url)
-    status, task_url = url.url_post(task_url, data=task)
+    r = requests.post(url=task_url, json=task)
+    status = r.status_code
+    task_url = r.text[1:-2]
 
 if status != 200:
     raise ValueError('Task post failed:\n' + task_url)
@@ -90,7 +93,9 @@ else:
 print('fetching the running result')
 while True:
     time.sleep(1.0)
-    status, result = url.url_get(task_url, json=False)
+    r = requests.get(url = task_url)
+    status = r.status_code
+    result = r.text[1:-2]
     if status == 400:
         print('fetching result failed,: ', result)
         print('retrying...')

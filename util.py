@@ -2,6 +2,7 @@ import socket
 from urllib.parse import urlparse
 import mydns
 import url
+import requests
 
 def api_local_host():
     return 'localhost'
@@ -82,11 +83,13 @@ def api_has_MyScheduler(hostport, timeout=5):
     if not resolved:
         return False
 
-    status, raw_spec = url.url_get(api_url_hostport(hostport),
-                               timeout=timeout,
-                               throw=False,
-                               json=False,
-    )
+    #status, raw_spec = url.url_get(api_url_hostport(hostport),
+    #                           timeout=timeout,
+    #                           throw=False,
+    #                           json=False,
+    #)
+    r = requests.get(url = api_url_hostport(hostport),
+                    timeout=timeout)
 
-    return status == 200
+    return r.status_code == 200
  
